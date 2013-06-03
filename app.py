@@ -7,8 +7,6 @@ from flask import Flask, request, session, g, redirect, url_for,\
     abort, render_template, flash
 from contextlib import closing
 
-from flask.ext.bootstrap import Bootstrap
-
 from inspect import getmembers
 from pprint import pprint
 import os
