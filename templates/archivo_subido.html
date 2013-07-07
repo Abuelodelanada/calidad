@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
+    {% for dato in datos_estadisticos %}
+        <li>{{datos}}</li>
+    {% endfor %}
      Archivo subido
   {% endif %}
 {% endblock %}

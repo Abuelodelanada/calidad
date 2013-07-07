@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('abc_subir_archivo') }}" method="post" class="add-entry" enctype="multipart/form-data">
+      <dl>
+        <dt>Archivo:
+        <dd><input type="file" title="Seleccionar archivo" name="archivo">
+        <dd><input class="btn btn-primary" type=submit value="Procesar Archivo">
+      </dl>
+    </form>
+  {% endif %}
+{% endblock %}

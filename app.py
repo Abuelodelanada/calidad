@@ -2,7 +2,6 @@
 
 
 # all the imports
-import sqlite3
 from flask import Flask, request, session, g, redirect, url_for,\
     abort, render_template, flash
 from contextlib import closing
@@ -11,7 +10,8 @@ from inspect import getmembers
 from pprint import pprint
 import os
 import csv
-from numpy import *
+from operator import itemgetter, attrgetter
+import json
 
 # configuration
 DEBUG = True
@@ -29,24 +29,86 @@ valores = []
 cantidad = ''
 sumatoria = ''
 media = ''
+rango = ''
+desvio_estandar = ''
+limites_control = ''
+datos_estadisticos = {}
+
+LISTADO_ABC = []
+TOTALES_ABC = {}
+TOTALES_ABC_ACUM = []
+TOTALES_ABC_ACUM_JSON = []
+TOTALES = ''
+totales = ''
+TOTAL = 0
+grupos = {}
 
 
-def leer_csv(archivo):
+def leer_csv_abc(archivo):
+    global TOTALES, TOTALES_ABC, LISTADO_ABC
     reader = csv.reader(open(archivo, 'rb'))
-    for row in enumerate(reader):
-        valores.append(float(row[1][0]))
+    for row in reader:
+        LISTADO_ABC.append(row)
 
-    cantidad = obtener_cantidad(valores)
-    sumatoria = obtener_sumatoria(valores)
-    media = obtener_media(valores)
-    rango = obtener_rango(valores)
-    desvio_estandar = obtener_desvio(valores)
 
-    print cantidad
-    print sumatoria
-    print media
-    print rango
-    print desvio_estandar
+def calcular_totales(listado):
+    global TOTALES, TOTALES_ABC, TOTAL, TOTALES_ABC_ACUM_JSON, grupos
+    TOTALES_ABC = {}
+    TOTALES_ABC_ACUM = []
+    TOTALES_ABC_ACUM_JSON = []
+    TOTALES = ''
+    TOTAL = 0
+    grupos = {}
+
+    for row in listado:
+        a = convertir_a_float(row[1]) * convertir_a_float(row[2])
+        TOTALES_ABC[row[0]] = a
+        TOTAL = TOTAL + a
+
+    TOTALES_ABC = TOTALES_ABC.items()
+    TOTALES_ABC = sorted(TOTALES_ABC, key=itemgetter(1), reverse=True)
+    porcentaje = 0
+    for total in TOTALES_ABC:
+        porcentaje = porcentaje + (total[1]/TOTAL)
+        TOTALES_ABC_ACUM.append((total[0], porcentaje))
+
+    grupos = obtener_grupos(TOTALES_ABC_ACUM)
+
+    TOTALES_ABC = json.dumps(TOTALES_ABC)
+    TOTALES_ABC_ACUM_JSON = json.dumps(TOTALES_ABC_ACUM)
+
+
+def obtener_grupos(acumulados):
+    "Los productos que representan el 80%"
+
+    productos_a = []
+    por_a = 0
+    productos_b = []
+    por_b = 0
+    productos_c = []
+    por_c = 0
+
+    for i in acumulados:
+        por = i[1]
+        if(por <= 0.80):
+            productos_a.append(i[0])
+            por_a = i[1]
+        elif(por > 0.8 and por <= 0.9):
+            productos_b.append(i[0])
+            por_b = i[1]
+        elif(por > 0.9):
+            productos_c.append(i[0])
+            por_c = i[1]
+
+    resultado = {'a': [productos_a, round(por_a, 2)],
+                 'b': [productos_b, round(por_b, 2)],
+                 'c': [productos_c, round(por_c, 2)]}
+    return resultado
+
+
+def convertir_a_float(numero_str):
+    nro = float(numero_str.replace(',', '.'))
+    return nro
 
 
 def es_archivo_permitido(archivo):
@@ -54,39 +116,11 @@ def es_archivo_permitido(archivo):
     return '.' in archivo and archivo.endswith('csv')
 
 
-def obtener_cantidad(valores):
-    return len(valores)
-
-
-def obtener_sumatoria(valores):
-    return sum(valores)
-
-
-def obtener_media(valores):
-    if(len(valores) > 0):
-        media = average(valores)
-        return media
-
-
-def obtener_rango(valores):
-    v = array(valores)
-    max = v.max()
-    min = v.min()
-    rango = max - min
-    return rango
-
-
-def obtener_desvio(valores):
-    return std(valores)
-
 
 # Vistas
 @app.route('/')
-def show_productos():
-    #cur = g.db.execute('select id, nombre\
-        #                   from productos order by id desc')
-    productos = {'codigo': '1', 'nombre': 'Nombre'}
-    return render_template('show_productos.html', productos=productos)
+def home():
+    return render_template('home.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -100,7 +134,7 @@ def login():
         else:
             session['logged_in'] = True
             flash(u'Se encuentra logueado en la aplicación!')
-        return redirect(url_for('show_productos'))
+        return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
 
@@ -108,16 +142,17 @@ def login():
 def logout():
     session.pop('logged_in', None)
     flash(u'Está deslogueado de la aplicación')
-    return redirect(url_for('show_productos'))
+    return redirect(url_for('home'))
 
 
-@app.route('/analizar_datos')
-def analizar_datos():
-    return render_template('analizar_datos.html')
+@app.route('/abc')
+def abc():
+    return render_template('abc.html')
 
 
-@app.route('/subir_archivo', methods=['POST'])
-def subir_archivo():
+@app.route('/abc_subir_archivo', methods=['POST'])
+def abc_subir_archivo():
+    global LISTADO_ABC, TOTALES, TOTALES_ABC_ACUM_JSON
     if not session.get('logged_in'):
         abort(401)
 
@@ -127,8 +162,10 @@ def subir_archivo():
         if file and es_archivo_permitido(file.filename):
             filename = file.filename
             file.save(os.path.join(UPLOADS_FOLDER, filename))
-            leer_csv(os.path.join(UPLOADS_FOLDER, filename))
-            return render_template('archivo_subido.html')
+            leer_csv_abc(os.path.join(UPLOADS_FOLDER, filename))
+            calcular_totales(LISTADO_ABC)
+            flash(u'Datos analizados')
+            return render_template('abc_grafico.html', totales = TOTALES_ABC, totales_acum = TOTALES_ABC_ACUM_JSON, monto_total = TOTAL, grupos = grupos)
         else:
             flash(u"El archivo %s no es un archivo válido" %
                   (file.filename), "error")
