@@ -4,14 +4,13 @@
 # all the imports
 from flask import Flask, request, session, g, redirect, url_for,\
     abort, render_template, flash
-from contextlib import closing
 
-from inspect import getmembers
-from pprint import pprint
 import os
 import csv
 from operator import itemgetter, attrgetter
 import json
+from Inventario import *
+from Bom import *
 
 # configuration
 DEBUG = True
@@ -43,12 +42,42 @@ totales = ''
 TOTAL = 0
 grupos = {}
 
+inventario = ''
+bom = ''
 
 def leer_csv_abc(archivo):
     global TOTALES, TOTALES_ABC, LISTADO_ABC
     reader = csv.reader(open(archivo, 'rb'))
     for row in reader:
         LISTADO_ABC.append(row)
+
+
+def leer_csv_inventario(archivo):
+    global inventario
+    reader = csv.reader(open(archivo, 'rb'))
+    inventario = Inventario()
+    listado = []
+
+    for row in reader:
+        listado.append(row)
+
+    inventario.cargar_inventario(listado)
+
+
+def leer_csv_bom(archivo):
+    global bom
+    reader = csv.reader(open(archivo, 'rb'))
+    bom = Bom()
+    listado = []
+    for row in reader:
+        listado.append(row)
+
+    bom.cargar_bom(listado)
+
+
+def calcular_mrp():
+    print bom.obtener_bom()
+    print inventario.obtener_inventario()
 
 
 def calcular_totales(listado):
@@ -116,7 +145,6 @@ def es_archivo_permitido(archivo):
     return '.' in archivo and archivo.endswith('csv')
 
 
-
 # Vistas
 @app.route('/')
 def home():
@@ -143,6 +171,10 @@ def logout():
     session.pop('logged_in', None)
     flash(u'Está deslogueado de la aplicación')
     return redirect(url_for('home'))
+
+@app.route('/mrp')
+def mrp():
+    return render_template('mrp.html')
 
 
 @app.route('/abc')
@@ -172,6 +204,70 @@ def abc_subir_archivo():
             return render_template('archivo_subido.html')
 
     return render_template('archivo_subido.html')
+
+
+@app.route('/mrp_subir_inventario', methods=['POST'])
+def mrp_subir_inventario():
+    if not session.get('logged_in'):
+        abort(401)
+
+    if request.method == 'POST':
+        #import ipdb; ipdb.set_trace()
+        file = request.files['archivo']
+        if file and es_archivo_permitido(file.filename):
+            filename = file.filename
+            file.save(os.path.join(UPLOADS_FOLDER, filename))
+            leer_csv_inventario(os.path.join(UPLOADS_FOLDER, filename))
+            flash(u'Inventario subido')
+            return render_template('mrp.html')
+        else:
+            flash(u"El archivo %s no es un archivo válido" %
+                  (file.filename), "error")
+
+
+@app.route('/mrp_subir_bom', methods=['POST'])
+def mrp_subir_bom():
+    if not session.get('logged_in'):
+        abort(401)
+
+    if request.method == 'POST':
+        #import ipdb; ipdb.set_trace()
+        file = request.files['archivo']
+        if file and es_archivo_permitido(file.filename):
+            filename = file.filename
+            file.save(os.path.join(UPLOADS_FOLDER, filename))
+            leer_csv_bom(os.path.join(UPLOADS_FOLDER, filename))
+            flash(u'BOM subido')
+            return render_template('mrp.html')
+        else:
+            flash(u"El archivo %s no es un archivo válido" %
+                  (file.filename), "error")
+
+
+@app.route('/mrp_cantidad', methods=['POST'])
+def mrp_cantidad():
+    global cantidad
+    if not session.get('logged_in'):
+        abort(401)
+
+    if request.method == 'POST':
+        #import ipdb; ipdb.set_trace()
+        cantidad = int(request.form.values()[0])
+        print cantidad
+        flash(u'Cantidad a fabricar cargada: %s ' % (cantidad))
+        return render_template('mrp.html')
+
+
+@app.route('/mrp_calcular', methods=['POST'])
+def mrp_calcular():
+    if not session.get('logged_in'):
+        abort(401)
+
+    if request.method == 'POST':
+        #import ipdb; ipdb.set_trace()
+        flash(u'MRP Calculado')
+        calcular_mrp()
+        return render_template('mrp.html')
 
 
 if __name__ == "__main__":

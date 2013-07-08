@@ -3,7 +3,7 @@
 <title>Calidad</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static',  filename='css/bootstrap.min.css') }}">
 <div class=container-fluid>
-  <h1>Calidad</h1>
+  <h1>PCP</h1>
   <div class=nav-list>
   {% if not session.logged_in %}
   <div class="navbar">
@@ -21,6 +21,9 @@
       <ul class="nav">
         <li>
           <a href="{{ url_for('abc') }}">ABC</a>
+        </li>
+        <li>
+          <a href="{{ url_for('mrp') }}">MRP</a>
         </li>
         <li class="active">
           <a href="{{ url_for('logout') }}">Log Out</a>

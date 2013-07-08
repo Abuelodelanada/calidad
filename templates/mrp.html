@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="{{ url_for('static', filename='js/bootstrap-tab.js') }}"></script>
+  {% if session.logged_in %}
+
+      <form action="{{ url_for('mrp_subir_inventario') }}" method="post" class="add-entry" enctype="multipart/form-data">
+        <dl>
+          <dt>Subir Inventario:
+            <dd><input type="file" title="Seleccionar archivo" name="archivo">
+            <dd><input class="btn btn-primary" type=submit value="Subir Inventario">
+        </dl>
+      </form>
+
+      <form action="{{ url_for('mrp_subir_bom') }}" method="post" class="add-entry" enctype="multipart/form-data">
+        <dl>
+          <dt>Subir BOM:
+            <dd><input type="file" title="Seleccionar archivo" name="archivo">
+            <dd><input class="btn btn-primary" type=submit value="Subir BOM">
+        </dl>
+      </form>
+
+      <form action="{{ url_for('mrp_cantidad') }}" method="post" class="add-entry">
+        <dl>
+          <dt>Cantidad de Productos a fabricar:
+            <dd><input type="number" name="cantidad">
+            <dd><input class="btn btn-primary" type=submit value="Cargar Cantidad">
+        </dl>
+      </form>
+
+      <form action="{{ url_for('mrp_calcular') }}" method="post" class="add-entry">
+        <dl>
+          <dt>Calcular MRP:
+            <dd><input class="btn btn-primary" type=submit value="Calcular MRP">
+        </dl>
+      </form>
+
+  {% endif %}
+{% endblock %}
