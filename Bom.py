@@ -15,13 +15,12 @@ class Bom():
 
         for tupla in listado:
             codigo = tupla[0]
-            nivel = tupla[1]
-            cantidad = tupla[2]
+            cantidad = tupla[1]
 
-            if nivel not in self.BOM:
-                self.BOM[nivel] = [(codigo, cantidad)]
+            if codigo not in self.BOM:
+                self.BOM[codigo] = int(cantidad)
             else:
-                self.BOM[nivel].append((codigo, cantidad))
+                self.BOM[codigo] = self.BOM[codigo] + int(cantidad)
 
     def obtener_bom(self):
         return self.BOM

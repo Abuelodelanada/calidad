@@ -14,7 +14,8 @@ class Inventario():
         """
 
         for tupla in listado:
-            self.INVENTARIO[tupla[0]] = tupla[1]
+            cantidad = int(tupla[1])
+            self.INVENTARIO[tupla[0]] = cantidad
 
     def obtener_inventario(self):
         return self.INVENTARIO

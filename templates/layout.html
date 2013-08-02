@@ -1,40 +1,43 @@
 <!doctype html>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<title>Calidad</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static',  filename='css/bootstrap.min.css') }}">
-<div class=container-fluid>
-  <h1>PCP</h1>
-  <div class=nav-list>
-  {% if not session.logged_in %}
-  <div class="navbar">
-    <div class="navbar-inner">
-      <ul class="nav">
-        <li class="active">
-          <a href="{{ url_for('login') }}">Log In</a>
-          </li>
-      </ul>
+<html ng-app>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Calidad</title>
+  <link rel=stylesheet type=text/css href="{{ url_for('static',  filename='css/bootstrap.min.css') }}">
+  <script type="text/javascript" src="../static/js/angular/angular.js"></script>
+  <div class=container-fluid>
+    <h1>PCP</h1>
+    <div class=nav-list>
+      {% if not session.logged_in %}
+      <div class="navbar">
+        <div class="navbar-inner">
+          <ul class="nav">
+            <li class="active">
+              <a href="{{ url_for('login') }}">Log In</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      {% else %}
+      <div class="navbar">
+        <div class="navbar-inner">
+          <ul class="nav">
+            <li>
+              <a href="{{ url_for('abc') }}">ABC</a>
+            </li>
+            <li>
+              <a href="{{ url_for('mrp') }}">MRP</a>
+            </li>
+            <li class="active">
+              <a href="{{ url_for('logout') }}">Log Out</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      {% endif %}
     </div>
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+    {% block body %}{% endblock %}
   </div>
-  {% else %}
-  <div class="navbar">
-    <div class="navbar-inner">
-      <ul class="nav">
-        <li>
-          <a href="{{ url_for('abc') }}">ABC</a>
-        </li>
-        <li>
-          <a href="{{ url_for('mrp') }}">MRP</a>
-        </li>
-        <li class="active">
-          <a href="{{ url_for('logout') }}">Log Out</a>
-          </li>
-      </ul>
-    </div>
-  </div>
-  {% endif %}
-  </div>
-  {% for message in get_flashed_messages() %}
-  <div class="alert alert-info">{{ message }}</div>
-  {% endfor %}
-  {% block body %}{% endblock %}
-</div>
+<html>

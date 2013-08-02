@@ -11,6 +11,7 @@ from operator import itemgetter, attrgetter
 import json
 from Inventario import *
 from Bom import *
+from Mrp import *
 
 # configuration
 DEBUG = True
@@ -44,6 +45,8 @@ grupos = {}
 
 inventario = ''
 bom = ''
+mrp = ''
+
 
 def leer_csv_abc(archivo):
     global TOTALES, TOTALES_ABC, LISTADO_ABC
@@ -76,8 +79,10 @@ def leer_csv_bom(archivo):
 
 
 def calcular_mrp():
-    print bom.obtener_bom()
-    print inventario.obtener_inventario()
+    global mrp, bom, inventario
+    mrp = Mrp()
+    mrp.calucar_necesidades(bom, inventario, cantidad)
+    return mrp.obtener_necesidades()
 
 
 def calcular_totales(listado):
@@ -172,10 +177,6 @@ def logout():
     flash(u'Está deslogueado de la aplicación')
     return redirect(url_for('home'))
 
-@app.route('/mrp')
-def mrp():
-    return render_template('mrp.html')
-
 
 @app.route('/abc')
 def abc():
@@ -206,68 +207,40 @@ def abc_subir_archivo():
     return render_template('archivo_subido.html')
 
 
-@app.route('/mrp_subir_inventario', methods=['POST'])
-def mrp_subir_inventario():
+@app.route('/mrp')
+def mrp():
+    return render_template('mrp.html')
+
+
+@app.route('/mrp_enviar_datos', methods=['POST'])
+def mrp_enviar_datos():
     if not session.get('logged_in'):
         abort(401)
 
     if request.method == 'POST':
-        #import ipdb; ipdb.set_trace()
-        file = request.files['archivo']
-        if file and es_archivo_permitido(file.filename):
-            filename = file.filename
-            file.save(os.path.join(UPLOADS_FOLDER, filename))
+        file_inventario = request.files['archivo_inventario']
+        file_bom = request.files['archivo_bom']
+        global cantidad
+
+        if file_inventario and es_archivo_permitido(file_inventario.filename):
+            filename = file_inventario.filename
+            file_inventario.save(os.path.join(UPLOADS_FOLDER, filename))
             leer_csv_inventario(os.path.join(UPLOADS_FOLDER, filename))
-            flash(u'Inventario subido')
-            return render_template('mrp.html')
         else:
             flash(u"El archivo %s no es un archivo válido" %
-                  (file.filename), "error")
+                  (file_inventario.filename), "error")
 
-
-@app.route('/mrp_subir_bom', methods=['POST'])
-def mrp_subir_bom():
-    if not session.get('logged_in'):
-        abort(401)
-
-    if request.method == 'POST':
-        #import ipdb; ipdb.set_trace()
-        file = request.files['archivo']
-        if file and es_archivo_permitido(file.filename):
-            filename = file.filename
-            file.save(os.path.join(UPLOADS_FOLDER, filename))
+        if file_bom and es_archivo_permitido(file_bom.filename):
+            filename = file_bom.filename
+            file_bom.save(os.path.join(UPLOADS_FOLDER, filename))
             leer_csv_bom(os.path.join(UPLOADS_FOLDER, filename))
-            flash(u'BOM subido')
-            return render_template('mrp.html')
         else:
             flash(u"El archivo %s no es un archivo válido" %
-                  (file.filename), "error")
+                  (file_bom.filename), "error")
 
-
-@app.route('/mrp_cantidad', methods=['POST'])
-def mrp_cantidad():
-    global cantidad
-    if not session.get('logged_in'):
-        abort(401)
-
-    if request.method == 'POST':
-        #import ipdb; ipdb.set_trace()
         cantidad = int(request.form.values()[0])
-        print cantidad
-        flash(u'Cantidad a fabricar cargada: %s ' % (cantidad))
-        return render_template('mrp.html')
-
-
-@app.route('/mrp_calcular', methods=['POST'])
-def mrp_calcular():
-    if not session.get('logged_in'):
-        abort(401)
-
-    if request.method == 'POST':
-        #import ipdb; ipdb.set_trace()
-        flash(u'MRP Calculado')
-        calcular_mrp()
-        return render_template('mrp.html')
+        necesidades = calcular_mrp()
+        return render_template('mrp_datos_subidos.html', necesidades = necesidades)
 
 
 if __name__ == "__main__":
