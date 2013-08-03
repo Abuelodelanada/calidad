@@ -7,11 +7,11 @@ from flask import Flask, request, session, g, redirect, url_for,\
 
 import os
 import csv
-from operator import itemgetter, attrgetter
-import json
+
 from Inventario import *
 from Bom import *
 from Mrp import *
+from Abc import *
 
 # configuration
 DEBUG = True
@@ -48,13 +48,6 @@ bom = ''
 mrp = ''
 
 
-def leer_csv_abc(archivo):
-    global TOTALES, TOTALES_ABC, LISTADO_ABC
-    reader = csv.reader(open(archivo, 'rb'))
-    for row in reader:
-        LISTADO_ABC.append(row)
-
-
 def leer_csv_inventario(archivo):
     global inventario
     reader = csv.reader(open(archivo, 'rb'))
@@ -83,66 +76,6 @@ def calcular_mrp():
     mrp = Mrp()
     mrp.calucar_necesidades(bom, inventario, cantidad)
     return mrp.obtener_necesidades()
-
-
-def calcular_totales(listado):
-    global TOTALES, TOTALES_ABC, TOTAL, TOTALES_ABC_ACUM_JSON, grupos
-    TOTALES_ABC = {}
-    TOTALES_ABC_ACUM = []
-    TOTALES_ABC_ACUM_JSON = []
-    TOTALES = ''
-    TOTAL = 0
-    grupos = {}
-
-    for row in listado:
-        a = convertir_a_float(row[1]) * convertir_a_float(row[2])
-        TOTALES_ABC[row[0]] = a
-        TOTAL = TOTAL + a
-
-    TOTALES_ABC = TOTALES_ABC.items()
-    TOTALES_ABC = sorted(TOTALES_ABC, key=itemgetter(1), reverse=True)
-    porcentaje = 0
-    for total in TOTALES_ABC:
-        porcentaje = porcentaje + (total[1]/TOTAL)
-        TOTALES_ABC_ACUM.append((total[0], porcentaje))
-
-    grupos = obtener_grupos(TOTALES_ABC_ACUM)
-
-    TOTALES_ABC = json.dumps(TOTALES_ABC)
-    TOTALES_ABC_ACUM_JSON = json.dumps(TOTALES_ABC_ACUM)
-
-
-def obtener_grupos(acumulados):
-    "Los productos que representan el 80%"
-
-    productos_a = []
-    por_a = 0
-    productos_b = []
-    por_b = 0
-    productos_c = []
-    por_c = 0
-
-    for i in acumulados:
-        por = i[1]
-        if(por <= 0.80):
-            productos_a.append(i[0])
-            por_a = i[1]
-        elif(por > 0.8 and por <= 0.9):
-            productos_b.append(i[0])
-            por_b = i[1]
-        elif(por > 0.9):
-            productos_c.append(i[0])
-            por_c = i[1]
-
-    resultado = {'a': [productos_a, round(por_a, 2)],
-                 'b': [productos_b, round(por_b, 2)],
-                 'c': [productos_c, round(por_c, 2)]}
-    return resultado
-
-
-def convertir_a_float(numero_str):
-    nro = float(numero_str.replace(',', '.'))
-    return nro
 
 
 def es_archivo_permitido(archivo):
@@ -195,10 +128,15 @@ def abc_subir_archivo():
         if file and es_archivo_permitido(file.filename):
             filename = file.filename
             file.save(os.path.join(UPLOADS_FOLDER, filename))
-            leer_csv_abc(os.path.join(UPLOADS_FOLDER, filename))
-            calcular_totales(LISTADO_ABC)
+            abc = Abc()
+            abc.leer_csv_abc(os.path.join(UPLOADS_FOLDER, filename))
+            abc.calcular_totales()
             flash(u'Datos analizados')
-            return render_template('abc_grafico.html', totales = TOTALES_ABC, totales_acum = TOTALES_ABC_ACUM_JSON, monto_total = TOTAL, grupos = grupos)
+            return render_template('abc_grafico.html',
+                                   totales = abc.TOTALES_ABC,
+                                   totales_acum = abc.TOTALES_ABC_ACUM_JSON,
+                                   monto_total = abc.TOTAL,
+                                   grupos = abc.grupos)
         else:
             flash(u"El archivo %s no es un archivo válido" %
                   (file.filename), "error")
