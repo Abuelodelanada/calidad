@@ -123,7 +123,6 @@ def abc_subir_archivo():
         abort(401)
 
     if request.method == 'POST':
-        #import ipdb; ipdb.set_trace()
         file = request.files['archivo']
         if file and es_archivo_permitido(file.filename):
             filename = file.filename

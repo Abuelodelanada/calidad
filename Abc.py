@@ -7,9 +7,7 @@ from operator import itemgetter, attrgetter
 
 class Abc():
 
-    LISTADO_ABC = []
     TOTALES_ABC = {}
-    TOTALES_ABC_ACUM = []
     TOTALES_ABC_ACUM_JSON = []
     TOTALES = ''
     TOTAL = 0
@@ -18,6 +16,7 @@ class Abc():
     def __init__(self, ):
         """
         """
+        self.TOTALES_ABC = {}
 
     def __exit__(self, ):
         del self
@@ -28,6 +27,7 @@ class Abc():
 
     def leer_csv_abc(self, archivo):
         reader = csv.reader(open(archivo, 'rb'))
+        self.LISTADO_ABC = []
         for row in reader:
             self.LISTADO_ABC.append(row)
 
@@ -42,6 +42,7 @@ class Abc():
         self.TOTALES_ABC = sorted(self.TOTALES_ABC, key=itemgetter(1),
                                   reverse=True)
         porcentaje = 0
+        self.TOTALES_ABC_ACUM = []
         for total in self.TOTALES_ABC:
             porcentaje = porcentaje + (total[1]/self.TOTAL)
             self.TOTALES_ABC_ACUM.append((total[0], porcentaje))
