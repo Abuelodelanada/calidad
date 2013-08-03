@@ -11,27 +11,56 @@
     <script type="text/javascript" src="../static/js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
     <script type="text/javascript" src="../static/js/jqplot/plugins/jqplot.barRenderer.min.js"></script>
     <script type="text/javascript" src="../static/js/grafico_abc.js"></script>
-    <div id="grafico" style="height:500px;width:800px;"></div>
-    <div id="datos"><br>Monto total: {{monto_total}} </div>
-    <ul>
-      <li>Grupo A, representa hasta el {{ grupos['a'][1]*100 }}% del costo
-      <ul type="square">
-        {% for p in grupos['a'][0] %}
-        <li> {{ p }}
-        {% endfor %}
-      </ul>
-      <li>Grupo B: representa hasta el {{ grupos['b'][1]*100 }}% del costo
-      <ul type="square">
-        {% for p in grupos['b'][0] %}
-        <li> {{ p }}
-        {% endfor %}
-      </ul>
-      <li>Grupo C: representa hasta el {{ grupos['c'][1]*100 }}% del costo
-      <ul type="square">
-        {% for p in grupos['c'][0] %}
-        <li> {{ p }}
-        {% endfor %}
-      </ul>
-    </ul>
+    <div id="grafico" style="height:500px;width:100%;"></div>
+    <div id="datos" style="width:35%;"></div>
+    <br>
+    <br>
+    <h4>Monto total: {{monto_total}} </h4>
+    <div id="gruposab" style="padding-top:10px; padding-right:5px;float:left;width:48%;">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Grupo A, representa hasta el {{ grupos['a'][1]*100 }}% del costo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in grupos['a'][0] %}
+          <tr>
+            <th>{{ p }}</th>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Grupo B, representa hasta el {{ grupos['b'][1]*100 }}% del costo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in grupos['b'][0] %}
+          <tr>
+            <th>{{ p }}</th>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    <div id="grupoc" style="padding-top:10px; padding-left:5px;float:left;width:48%;">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Grupo C, representa hasta el {{ grupos['c'][1]*100 }}% del costo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in grupos['c'][0] %}
+          <tr>
+            <th>{{ p }}</th>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   {% endif %}
 {% endblock %}
