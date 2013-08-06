@@ -8,10 +8,12 @@
   <img src="../static/img/ejemplo_csv.png" class="img-rounded">
   <a href="../abc_min.csv" class="btn btn-success"> Descargar archivo de ejemplo</a>
 </div>
+<pre>
 <form action="{{ url_for('abc_subir_archivo') }}" method="post" class="form-inline" enctype="multipart/form-data">
-  <label class="control-label" for="archivo">Archivo: </label>
+  <strong>Seleccione el archivo a procesar</strong>:
   <input type="file" title="Seleccionar archivo" name="archivo">
   <input class="btn btn-primary" type="submit" value="Procesar Archivo">
 </form>
+</pre>
   {% endif %}
 {% endblock %}
