@@ -3,7 +3,7 @@
 
 # all the imports
 from flask import Flask, request, session, g, redirect, url_for,\
-    abort, render_template, flash
+    abort, render_template, flash, make_response
 
 import os
 import csv
@@ -89,6 +89,14 @@ def home():
     return render_template('home.html')
 
 
+@app.route('/abc_min.csv', methods=['GET'])
+def ejemplo():
+  response = make_response(open('abc_min.csv').read())
+  response.headers["Content-type"] = "text/plain"
+  response.headers['Content-disposition'] = 'attachment';
+  return response
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -142,6 +150,7 @@ def abc_subir_archivo():
             return render_template('archivo_subido.html')
 
     return render_template('archivo_subido.html')
+
 
 
 @app.route('/mrp')
