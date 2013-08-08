@@ -176,9 +176,6 @@ def mrp():
 
 @app.route('/mrp_enviar_datos', methods=['POST'])
 def mrp_enviar_datos():
-    if not session.get('logged_in'):
-        abort(401)
-
     if request.method == 'POST':
         file_inventario = request.files['archivo_inventario']
         file_bom = request.files['archivo_bom']

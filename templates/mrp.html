@@ -4,56 +4,64 @@
 
 <div class="hero-unit">
   <h2>MRP: Material Requirements Planning</h2>
-  <p>El objetivo de esta sección es poder calcular de manera sencilla los requerimientos de materiales a partir de:</p>
-  <ul>
-    <li> El inventario actual.
-    <li> La estructura del producto a fabricar. (BOM: Bill Of Materials).
-    <li> La cantidad de productos a fabricar.
-  </ul>
-  <p>Para esto, es necesario subir dos archivos <a href="http://es.wikipedia.org/wiki/CSV" target="_blank">.csv</a>. Uno de ellos debe contener el inventario actual y otro la estructura del producto a fabricar.</p>
-
-
-  <form action="{{ url_for('mrp_enviar_datos') }}" method="post" class="add-entry" enctype="multipart/form-data">
-    <ul class="thumbnails">
-      <li class="span4">
-        <div class="thumbnail">
-          <img src="../static/img/ejemplo_inventario.png" class="img-rounded">
-          <img data-src="holder.js/300x200" alt="Ejemplo archivo de inventario">
-          <br>
-          <p>Este archivo debe contener dos columnas: Código artículo y cantidad del mismo disponible en stock.</p>
-          <a href="../inventario.csv" class="btn btn-success"> Descargar archivo de ejemplo</a>
-        </div>
-      </li>
-      <li class="span4">
-        <div class="thumbnail">
-          <img src="../static/img/ejemplo_bom.png" class="img-rounded">
-          <img data-src="holder.js/300x200" alt="Ejemplo archivo de BOM">
-          <br>
-          <p>Este archivo debe contener dos columnas: Código de artículo y cantidad del mismo para armar una unidad de producto terminado.</p>
-          <a href="../bom.csv" class="btn btn-success"> Descargar archivo de ejemplo</a>
-        </div>
-      </li>
-    </ul>
-  <dl>
-    <dt>Subir Inventario:
-      <dd><input type="file" title="Seleccionar archivo" name="archivo_inventario">
-  </dl>
-
-  <dl>
-    <dt>Subir BOM:
-      <dd><input type="file" title="Seleccionar archivo" name="archivo_bom">
-  </dl>
-
-  <dl>
-    <dt>Cantidad de Productos a fabricar:
-      <dd><input type="number" name="cantidad" placeholder="Ingrese la cantidad…">
-  </dl>
-
-  <dl>
-    <dt>Calcular MRP:
-      <dd><input class="btn btn-primary" type="submit" value="Calcular MRP">
-  </dl>
-</form>
+  <div class="row">
+    <div class="span6">
+      <p>El objetivo de esta sección es poder calcular de manera sencilla los requerimientos de materiales a partir de:</p>
+      <ul>
+        <li> El inventario actual.
+        <li> La estructura del producto a fabricar. (BOM: Bill Of Materials).
+        <li> La cantidad de productos a fabricar.
+      </ul>
+      <p>Para esto, es necesario subir dos archivos <a href="http://es.wikipedia.org/wiki/CSV" target="_blank">.csv</a>. Uno de ellos debe contener el inventario actual y otro la estructura del producto a fabricar.</p>
+    </div>
+    <div class="span6">
+      <ul class="thumbnails">
+        <li class="span3">
+          <div class="thumbnail">
+            <img src="../static/img/ejemplo_inventario.png" class="img-rounded">
+            <img data-src="holder.js/300x200" alt="Ejemplo archivo de inventario">
+            <br>
+            <p>Este archivo debe contener dos columnas: Código artículo y cantidad del mismo disponible en stock.</p>
+            <a href="../inventario.csv" class="btn btn-success"> Descargar archivo de ejemplo</a>
+          </div>
+        </li>
+        <li class="span3">
+          <div class="thumbnail">
+            <img src="../static/img/ejemplo_bom.png" class="img-rounded">
+            <img data-src="holder.js/300x200" alt="Ejemplo archivo de BOM">
+            <br>
+            <p>Este archivo debe contener dos columnas: Código de artículo y cantidad del mismo para armar una unidad de producto terminado.</p>
+            <a href="../bom.csv" class="btn btn-success"> Descargar archivo de ejemplo</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <form action="{{ url_for('mrp_enviar_datos') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+    <div class="control-group">
+      <label class="control-label" for="Inventario">Inventario</label>
+      <div class="controls">
+        <input id="inventario" type="file" title="Seleccionar archivo" name="archivo_inventario">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="BOM">B.O.M.</label>
+      <div class="controls">
+        <input id="BOM" type="file" title="Seleccionar archivo" name="archivo_bom">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="Cantidad">Cantidad</label>
+      <div class="controls">
+        <input type="number" name="cantidad" id="Cantidad" placeholder="Ingrese la cantidad">
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+        <button class="btn btn-primary" type="submit">Calcular MRP</button>
+      </div>
+    </div>
+  </form>
 </div>
   {% endif %}
 {% endblock %}
