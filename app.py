@@ -113,28 +113,6 @@ def ejemplo_bom():
   return response
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
-            error = u'Nombre de usuario inválido'
-        elif request.form['password'] != app.config['PASSWORD']:
-            error = u'Contraseña inválida'
-        else:
-            session['logged_in'] = True
-            flash(u'Se encuentra logueado en la aplicación!')
-        return redirect(url_for('home'))
-    return render_template('login.html', error=error)
-
-
-@app.route('/logout')
-def logout():
-    session.pop('logged_in', None)
-    flash(u'Está deslogueado de la aplicación')
-    return redirect(url_for('home'))
-
-
 @app.route('/abc')
 def abc():
     return render_template('abc.html')
@@ -143,8 +121,6 @@ def abc():
 @app.route('/abc_subir_archivo', methods=['POST'])
 def abc_subir_archivo():
     global LISTADO_ABC, TOTALES, TOTALES_ABC_ACUM_JSON
-    if not session.get('logged_in'):
-        abort(401)
 
     if request.method == 'POST':
         file = request.files['archivo']
