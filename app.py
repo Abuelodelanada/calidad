@@ -97,6 +97,22 @@ def ejemplo():
   return response
 
 
+@app.route('/inventario.csv', methods=['GET'])
+def ejemplo_inventario():
+  response = make_response(open('inventario.csv').read())
+  response.headers["Content-type"] = "text/plain"
+  response.headers['Content-disposition'] = 'attachment';
+  return response
+
+
+@app.route('/bom.csv', methods=['GET'])
+def ejemplo_bom():
+  response = make_response(open('bom.csv').read())
+  response.headers["Content-type"] = "text/plain"
+  response.headers['Content-disposition'] = 'attachment';
+  return response
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None

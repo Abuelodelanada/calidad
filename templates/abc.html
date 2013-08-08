@@ -1,10 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
 <div class="hero-unit">
   <h2>Cálculo del diagrama de Pareto (ABC)</h2>
   <p>El objetivo de esta sección es brindarnos la posibilidad de graficar sencillamente, a partir de un archivo, un driagrama de Pareto.</p>
-  <p>Para esto, es necesario subir un archivo .csv que contenga las siguientes 3 columnas:</p>
+  <p>Para esto, es necesario subir un archivo <a href="http://es.wikipedia.org/wiki/CSV" target="_blank">.csv</a> que contenga las siguientes 3 columnas:</p>
   <img src="../static/img/ejemplo_csv.png" class="img-rounded">
   <a href="../abc_min.csv" class="btn btn-success"> Descargar archivo de ejemplo</a>
   <br>
@@ -15,5 +14,4 @@
     <input class="btn btn-primary" type="submit" value="Procesar Archivo">
   </form>
 </div>
-  {% endif %}
 {% endblock %}
