@@ -7,6 +7,17 @@
   <div class=container-fluid>
     <h1>PCP</h1>
     <div class=nav-list>
+      {% if not session.logged_in %}
+      <div class="navbar">
+        <div class="navbar-inner">
+          <ul class="nav">
+            <li class="active">
+              <a href="{{ url_for('login') }}">Log In</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      {% else %}
       <div class="navbar">
         <div class="navbar-inner">
           <ul class="nav">
@@ -16,9 +27,13 @@
             <li>
               <a href="{{ url_for('mrp') }}">MRP</a>
             </li>
+            <li class="active">
+              <a href="{{ url_for('logout') }}">Log Out</a>
+            </li>
           </ul>
         </div>
       </div>
+      {% endif %}
     </div>
     {% for message in get_flashed_messages() %}
     <div class="alert alert-info">{{ message }}</div>
