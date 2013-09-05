@@ -109,7 +109,7 @@ def ejemplo_inventario():
 def ejemplo_bom():
     response = make_response(open('bom.csv').read())
     response.headers["Content-type"] = "text/plain"
-    response.headers['Content-disposition'] = 'attachment';
+    response.headers["Content-disposition"] = "attachment";
     return response
 
 
@@ -134,7 +134,8 @@ def abc_subir_archivo():
                                    totales = abc.TOTALES_ABC,
                                    totales_acum = abc.TOTALES_ABC_ACUM_JSON,
                                    monto_total = abc.TOTAL,
-                                   grupos = abc.grupos)
+                                   grupos = abc.grupos,
+                                   codigo_monto = abc.codigo_monto)
         else:
             flash(u"El archivo %s no es un archivo válido" %
                   (file.filename), "error")

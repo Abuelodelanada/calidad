@@ -2,7 +2,7 @@
 
 import csv
 import json
-from operator import itemgetter, attrgetter
+from operator import itemgetter
 
 
 class Abc():
@@ -12,6 +12,7 @@ class Abc():
     TOTALES = ''
     TOTAL = 0
     grupos = {}
+    codigo_monto = {}
 
     def __init__(self, ):
         """
@@ -47,12 +48,17 @@ class Abc():
             porcentaje = porcentaje + (total[1]/self.TOTAL)
             self.TOTALES_ABC_ACUM.append((total[0], porcentaje))
 
-        self.grupos = self.obtener_grupos(self.TOTALES_ABC_ACUM)
+        self.obtener_grupos()
+        self.obtener_codigo_monto()
         self.TOTALES_ABC = json.dumps(self.TOTALES_ABC)
         self.TOTALES_ABC_ACUM_JSON = json.dumps(self.TOTALES_ABC_ACUM)
         print self.TOTALES_ABC
 
-    def obtener_grupos(self, acumulados):
+    def obtener_codigo_monto(self):
+        for p in self.TOTALES_ABC:
+            self.codigo_monto[p[0]] = p[1]
+
+    def obtener_grupos(self):
         "Los productos que representan el 80%"
 
         productos_a = []
@@ -61,6 +67,7 @@ class Abc():
         por_b = 0
         productos_c = []
         por_c = 0
+        acumulados = self.TOTALES_ABC_ACUM
 
         for i in acumulados:
             por = i[1]
@@ -74,7 +81,6 @@ class Abc():
                 productos_c.append(i[0])
                 por_c = i[1]
 
-        resultado = {'a': [productos_a, round(por_a, 2)],
-                     'b': [productos_b, round(por_b, 2)],
-                     'c': [productos_c, round(por_c, 2)]}
-        return resultado
+        self.grupos = {'a': [productos_a, round(por_a, 2)],
+                       'b': [productos_b, round(por_b, 2)],
+                       'c': [productos_c, round(por_c, 2)]}
