@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
     <script type="text/javascript">var totales = {{totales|safe}};</script>
     <script type="text/javascript">var totales_acum = {{totales_acum|safe}};</script>
     <script type="text/javascript" src="../static/js/jqplot/jquery.js"></script>
@@ -62,5 +61,4 @@
         </tbody>
       </table>
     </div>
-  {% endif %}
 {% endblock %}
