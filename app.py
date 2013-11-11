@@ -3,7 +3,7 @@
 
 # all the imports
 from flask import Flask, request, session, g, redirect, url_for,\
-    abort, render_template, flash, make_response
+abort, render_template, flash, make_response
 
 import os
 import csv
@@ -12,6 +12,7 @@ from Inventario import *
 from Bom import *
 from Mrp import *
 from Abc import *
+
 
 # configuration
 DEBUG = True
@@ -46,6 +47,7 @@ grupos = {}
 inventario = ''
 bom = ''
 mrp = ''
+html = ''
 
 
 def leer_csv_inventario(archivo):
@@ -120,7 +122,7 @@ def abc():
 
 @app.route('/abc_subir_archivo', methods=['POST'])
 def abc_subir_archivo():
-    global LISTADO_ABC, TOTALES, TOTALES_ABC_ACUM_JSON
+    global LISTADO_ABC, TOTALES, TOTALES_ABC_ACUM_JSON, html
     if request.method == 'POST':
         file = request.files['archivo']
         if file and es_archivo_permitido(file.filename):
@@ -129,13 +131,14 @@ def abc_subir_archivo():
             abc = Abc()
             abc.leer_csv_abc(os.path.join(UPLOADS_FOLDER, filename))
             abc.calcular_totales()
-            flash(u'Datos analizados')
-            return render_template('abc_grafico.html',
+
+            html = render_template('abc_grafico.html',
                                    totales = abc.TOTALES_ABC,
                                    totales_acum = abc.TOTALES_ABC_ACUM_JSON,
                                    monto_total = abc.TOTAL,
                                    grupos = abc.grupos,
                                    codigo_monto = abc.codigo_monto)
+            return html
         else:
             flash(u"El archivo %s no es un archivo válido" %
                   (file.filename), "error")
@@ -175,7 +178,8 @@ def mrp_enviar_datos():
 
         cantidad = int(request.form.values()[0])
         necesidades = calcular_mrp()
-        return render_template('mrp_datos_subidos.html', necesidades = necesidades)
+        html = render_template('mrp_datos_subidos.html', necesidades = necesidades)
+        return  html
 
 
 if __name__ == "__main__":

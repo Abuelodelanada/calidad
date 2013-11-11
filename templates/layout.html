@@ -1,15 +1,19 @@
 <!doctype html>
 <html ng-app lang="es">
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title>Calidad</title>
+  <title>UTN - Facultad Regional Buenos Aires</title>
   <link rel=stylesheet type=text/css href="{{ url_for('static',  filename='css/bootstrap.min.css') }}">
   <script type="text/javascript" src="../static/js/angular/angular.js"></script>
   <div class=container-fluid>
-    <h1>PCP</h1>
+    <a href="/"> <img src="../static/img/logo_utn.jpg" class="img-rounded"></a>
+    <br>
     <div class=nav-list>
       <div class="navbar">
         <div class="navbar-inner">
           <ul class="nav">
+            <li>
+              <a href="/">Inicio</a>
+            </li>
             <li>
               <a href="{{ url_for('abc') }}">ABC</a>
             </li>

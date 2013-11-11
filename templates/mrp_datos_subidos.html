@@ -7,13 +7,15 @@
       <tr>
         <th>Código</th>
         <th>Cantidad</th>
+        <th>Tiempo de Fabricacion</th>
       </tr>
     </thead>
     <tbody>
       {% for item in necesidades %}
       <tr>
         <th>{{item}}</th>
-        <th>{{necesidades[item]}}</th>
+        <th>{{necesidades[item][0]}}</th>
+        <th>{{necesidades[item][1]}}</th>
       </tr>
       {% endfor %}
     </tbody>

@@ -3,9 +3,12 @@
 
 class Mrp():
 
+    necesidades = {}
+
     def __init__(self, ):
         """
         """
+        self.necesidades.clear()
 
     def calucar_necesidades(self, bom, inventario, cantidad):
         """
@@ -17,23 +20,19 @@ class Mrp():
         bom = bom.obtener_bom()
         inventario = inventario.obtener_inventario()
         totales = {}
-        self.necesidades = {}
 
         for i in bom:
-            totales[i] = cantidad * bom[i]
+            totales[i] = cantidad * bom[i][0]
 
         for t in totales:
             if t in inventario:
                 if inventario[t] <= totales[t]:
-                    self.necesidades[t] = totales[t] - inventario[t]
+                    resta = totales[t] - inventario[t]
+                    tiempo = resta * bom[t][1]
+                    self.necesidades[t] = [resta, tiempo]
             else:
-                self.necesidades[t] = totales[t]
+                tiempo = resta * bom[t][1]
+                self.necesidades[t] = [totales[t], tiempo]
 
     def obtener_necesidades(self):
         return self.necesidades
-
-
-        print totales
-        print inventario
-        print necesidades
-        print cantidad
